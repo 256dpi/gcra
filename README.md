@@ -33,9 +33,12 @@ now = now.Add(2 * time.Second)
 bucket, result = MustCompute(now, bucket, 0, opts)
 fmt.Printf("%+v\n", result)
 
+fmt.Printf("Bucket Offset: %s", time.Time(bucket).Sub(now).String())
+
 // Output:
 // {Limited:false Remaining:15 RetryIn:0s ResetIn:3.5s}
 // {Limited:true Remaining:15 RetryIn:1.5s ResetIn:3.5s}
 // {Limited:false Remaining:0 RetryIn:0s ResetIn:5s}
 // {Limited:false Remaining:20 RetryIn:0s ResetIn:3s}
+// Bucket Offset: 3s
 ```
