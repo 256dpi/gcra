@@ -33,11 +33,14 @@ func Example() {
 	bucket, result = MustCompute(now, bucket, 0, opts)
 	fmt.Printf("%+v\n", result)
 
+	fmt.Printf("Bucket Offset: %s", time.Time(bucket).Sub(now).String())
+
 	// Output:
 	// {Limited:false Remaining:15 RetryIn:0s ResetIn:3.5s}
 	// {Limited:true Remaining:15 RetryIn:1.5s ResetIn:3.5s}
 	// {Limited:false Remaining:0 RetryIn:0s ResetIn:5s}
 	// {Limited:false Remaining:20 RetryIn:0s ResetIn:3s}
+	// Bucket Offset: 3s
 }
 
 var now = time.Date(2022, 1, 23, 10, 52, 0, 0, time.UTC)
@@ -50,6 +53,8 @@ func TestGenerate(t *testing.T) {
 	}
 
 	bucket := MustGenerate(now, 75, opts)
+	assert.Equal(t, time.Time(bucket).Sub(now), 2500*time.Millisecond)
+
 	bucket, result := MustCompute(now, bucket, 0, opts)
 	assert.Equal(t, Result{
 		Limited:   false,
@@ -59,6 +64,8 @@ func TestGenerate(t *testing.T) {
 	}, result)
 
 	bucket = MustGenerate(now, 20, opts)
+	assert.Equal(t, time.Time(bucket).Sub(now), 8*time.Second)
+
 	bucket, result = MustCompute(now, bucket, 0, opts)
 	assert.Equal(t, Result{
 		Limited:   false,
@@ -68,6 +75,8 @@ func TestGenerate(t *testing.T) {
 	}, result)
 
 	bucket = MustGenerate(now, 50, opts)
+	assert.Equal(t, time.Time(bucket).Sub(now), 5*time.Second)
+
 	bucket, result = MustCompute(now, bucket, 0, opts)
 	assert.Equal(t, Result{
 		Limited:   false,
