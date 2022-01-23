@@ -62,8 +62,7 @@ func MustGenerate(now time.Time, count int64, opts Options) Bucket {
 	return bucket
 }
 
-// Compute will perform the GCRA algorithm. Cost can be zero to query the state
-// of the bucket.
+// Compute will perform the GCRA. Cost may be zero to query the bucket.
 func Compute(now time.Time, bucket Bucket, cost int64, opts Options) (Bucket, Result, error) {
 	// check arguments
 	if opts.Burst == 0 || opts.Rate == 0 || opts.Period == 0 {
@@ -72,18 +71,16 @@ func Compute(now time.Time, bucket Bucket, cost int64, opts Options) (Bucket, Re
 		return bucket, Result{}, ErrCostHigherThanBurst
 	}
 
-	// get tat
+	// calculate TAT
 	tat := time.Time(bucket).UnixNano()
 
 	// compute GCRA
 	newTAT, limited, remaining, retryIn, resetIn := ComputeRaw(tat, now.UnixNano(), opts.Burst, opts.Rate, int64(opts.Period), cost)
 
-	// get bucket
-	if newTAT != tat {
-		bucket = Bucket(time.Unix(0, newTAT))
-	}
+	// update bucket
+	bucket = Bucket(time.Unix(0, newTAT))
 
-	// populate result
+	// prepare result
 	result := Result{
 		Limited:   limited,
 		Remaining: remaining,
@@ -155,11 +152,7 @@ func ComputeRaw(tat, now, burst, rate, period, cost int64) (int64, bool, int64, 
 	// calculate reset in
 	resetIn := newTAT - now
 
-	if increment > 0 {
-		tat = newTAT
-	}
-
-	return tat, false, remaining, 0, resetIn
+	return newTAT, false, remaining, 0, resetIn
 }
 
 func roundDiv(a, b int64) int64 {
