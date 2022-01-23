@@ -171,14 +171,17 @@ func TestCompute(t *testing.T) {
 }
 
 func TestGenerateErrors(t *testing.T) {
-	_, err := Generate(now, 0, Options{Burst: 0, Rate: 1, Period: 1})
-	assert.Equal(t, ErrZeroParameter, err)
+	_, err := Generate(now, -1, Options{Burst: 1, Rate: 1, Period: 1})
+	assert.Equal(t, ErrInvalidParameter, err)
+
+	_, err = Generate(now, 0, Options{Burst: 0, Rate: 1, Period: 1})
+	assert.Equal(t, ErrInvalidParameter, err)
 
 	_, err = Generate(now, 0, Options{Burst: 1, Rate: 0, Period: 1})
-	assert.Equal(t, ErrZeroParameter, err)
+	assert.Equal(t, ErrInvalidParameter, err)
 
 	_, err = Generate(now, 0, Options{Burst: 1, Rate: 1, Period: 0})
-	assert.Equal(t, ErrZeroParameter, err)
+	assert.Equal(t, ErrInvalidParameter, err)
 
 	_, err = Generate(now, 2, Options{Burst: 1, Rate: 1, Period: 1})
 	assert.Equal(t, ErrCostHigherThanBurst, err)
@@ -189,14 +192,17 @@ func TestGenerateErrors(t *testing.T) {
 }
 
 func TestComputeErrors(t *testing.T) {
-	_, _, err := Compute(now, Bucket{}, 1, Options{0, 1, 1})
-	assert.Equal(t, ErrZeroParameter, err)
+	_, _, err := Compute(now, Bucket{}, -1, Options{1, 1, 1})
+	assert.Equal(t, ErrInvalidParameter, err)
+
+	_, _, err = Compute(now, Bucket{}, 1, Options{0, 1, 1})
+	assert.Equal(t, ErrInvalidParameter, err)
 
 	_, _, err = Compute(now, Bucket{}, 1, Options{1, 0, 1})
-	assert.Equal(t, ErrZeroParameter, err)
+	assert.Equal(t, ErrInvalidParameter, err)
 
 	_, _, err = Compute(now, Bucket{}, 1, Options{1, 1, 0})
-	assert.Equal(t, ErrZeroParameter, err)
+	assert.Equal(t, ErrInvalidParameter, err)
 
 	_, _, err = Compute(now, Bucket{}, 2, Options{1, 1, 1})
 	assert.Equal(t, ErrCostHigherThanBurst, err)

@@ -1,4 +1,4 @@
-// Package gcra implements the generic cell rate algorithm.
+// Package gcra implements the generic cell rate algorithm (GCRA).
 package gcra
 
 import (
@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// ErrZeroParameter is returned if a parameter is zero.
-var ErrZeroParameter = errors.New("zero rate, burst or period provided")
+// ErrInvalidParameter is returned if a parameter is zero.
+var ErrInvalidParameter = errors.New("invalid parameter")
 
 // ErrCostHigherThanBurst is returned if the provided cost is higher than the
 // specified burst.
@@ -38,8 +38,8 @@ type Result struct {
 // at this point in time.
 func Generate(now time.Time, count int64, opts Options) (Bucket, error) {
 	// check arguments
-	if opts.Burst == 0 || opts.Rate == 0 || opts.Period == 0 {
-		return Bucket{}, ErrZeroParameter
+	if count < 0 || opts.Burst <= 0 || opts.Rate <= 0 || opts.Period <= 0 {
+		return Bucket{}, ErrInvalidParameter
 	} else if count > opts.Burst {
 		return Bucket{}, ErrCostHigherThanBurst
 	}
@@ -65,8 +65,8 @@ func MustGenerate(now time.Time, count int64, opts Options) Bucket {
 // Compute will perform the GCRA. Cost may be zero to query the bucket.
 func Compute(now time.Time, bucket Bucket, cost int64, opts Options) (Bucket, Result, error) {
 	// check arguments
-	if opts.Burst == 0 || opts.Rate == 0 || opts.Period == 0 {
-		return bucket, Result{}, ErrZeroParameter
+	if cost < 0 || opts.Burst <= 0 || opts.Rate <= 0 || opts.Period <= 0 {
+		return bucket, Result{}, ErrInvalidParameter
 	} else if cost > opts.Burst {
 		return bucket, Result{}, ErrCostHigherThanBurst
 	}

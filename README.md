@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/256dpi/gcra?status.svg)](http://godoc.org/github.com/256dpi/gcra)
 [![Release](https://img.shields.io/github/release/256dpi/gcra.svg)](https://github.com/256dpi/gcra/releases)
 
-**Package gcra implements the generic cell rate algorithm.**
+**Package gcra implements the generic cell rate algorithm (GCRA).**
 
 ## Example
 
